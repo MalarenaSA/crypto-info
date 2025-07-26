@@ -1,0 +1,13 @@
+{
+	"manifest_version": 3,
+	"name": "Crypto Info",
+	"description": "Provide crypto pricing & other info",
+	"version": "1.0.0",
+	"action": {
+    "default_popup": "index.html"
+  },
+	"host_permissions": [
+    "https://*.bitstamp.net/",
+		"https://*.coingecko.com/"
+  ]
+}

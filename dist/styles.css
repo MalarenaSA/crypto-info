@@ -1,0 +1,19 @@
+/* CryptoInfo CSS */
+
+body {
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  background-color: black;
+  color: white;
+  min-width: 300px;
+}
+
+.header {
+  margin: 30px auto;
+  text-align: center;
+}
+
+.btn {
+  margin: 20px auto;
+}
+
+
