@@ -8,8 +8,20 @@ import axios from "../node_modules/axios";
 const bitstampPairs = [
   "ETH/EUR",
   "XRP/EUR",
-  "ATOM/EUR",
   "FLR/EUR",
+  "SGB/EUR",
+  "ATOM/EUR",
+  "ADA/EUR",
+  "COREUM/EUR",
+  "DOT/EUR",
+  "NEAR/EUR",
+  "SOL/EUR",
+];
+
+const coingeckoPairs = [
+  "btc",
+  "eth",
+  "atom",
 ];
 
 
@@ -27,24 +39,24 @@ async function init() {
   results.innerHTML="<p>Results will display here...</p>";
   messages.innerHTML="<p>Messages will display here...</p>";
   await getBitstampData();
+  await getCoingeckoData();
   resultsHTML = `<h2>Current Prices:</h2>`;
   priceData.forEach((item) => {
     resultsHTML += `<p> ${item.pair}  >  ${item.last}  |  ${item.percent_change_24}%`;
   });
   results.innerHTML = resultsHTML;
   
-  // getCoingeckoData();
+  
 
 
 };
 
 // Function to get the current Bitstamp Price Data
 async function getBitstampData() {
-  const bitstampURL = "https://www.bitstamp.net/api/v2/ticker/";
   try {
     // Get Data using Axios
     await axios
-      .get(bitstampURL)
+      .get("https://www.bitstamp.net/api/v2/ticker/")
       .then((response) => {        
         // console.log(response);
         if (response.data.length === 0) {
@@ -52,7 +64,7 @@ async function getBitstampData() {
         } else {
           bitstampPairs.forEach(pair => {
             const pairData = response.data.find(obj => obj.pair === pair);
-            // console.log(pairData);
+            console.log(pairData);
             if (pairData === undefined) {
               priceData.push({
                 last: "0.00", 
@@ -73,13 +85,39 @@ async function getBitstampData() {
 
 // Function to get the current Coingecko Price Data
 async function getCoingeckoData() {
-  const coingeckoURL = "https://api.coingecko.com/api/v3/coins/list/";
   try {
     // Get Data using Axios
     await axios
-      .get(coingeckoURL)
+      .get("https://api.coingecko.com/api/v3/coins/markets" , {
+        params: {
+          vs_currency: "eur"
+        },
+      })
       .then((response) => {        
-        console.log(response);
+        // console.log(response);
+        if (response.data.length === 0) {
+          throw Error (`No Coingecko data retrieved`);
+        } else {
+          coingeckoPairs.forEach(pair => {
+            const pairData = response.data.find(obj => obj.symbol === pair);
+            console.log(pairData);
+            if (pairData === undefined) {
+              priceData.push({
+                last: "0.00", 
+                market: `${pair}/EUR`,
+                pair: `${pair}/EUR`,
+                percent_change_24: "0.00",
+              });
+            } else {
+              priceData.push({
+                last: pairData.current_price,
+                market: `${pair}/EUR`,
+                pair: `${pair}/EUR`,
+                percent_change_24: pairData.price_change_percentage_24h,
+              });
+            }
+          });
+        }
       });
   } catch (error) {
     console.log(error);
