@@ -19,15 +19,23 @@ const bitstampPairs = [
 ];
 
 const coingeckoPairs = [
-  "btc",
-  "eth",
-  "atom",
+  "BTC",
+  "ETH",
+  "ATOM",
 ];
 
 
-// Initialise priceData Array and ResultsHTML
-let priceData = [];
+// Initialise ResultsHTML and priceData Array
 let resultsHTML = "";
+let priceData = [];
+/* Structure of each priceData item {
+  source:
+  crypto:
+  currency:
+  last:
+  percent_change_24:
+  percent_change_colour:
+}*/
 
 // Get the HTML elements to manipulate
 const results = document.querySelector(".results");
@@ -40,9 +48,9 @@ async function init() {
   messages.innerHTML="<p>Messages will display here...</p>";
   await getBitstampData();
   await getCoingeckoData();
-  resultsHTML = `<h2>Current Prices:</h2>`;
   priceData.forEach((item) => {
-    resultsHTML += `<p> ${item.pair}  >  ${item.last}  |  ${item.percent_change_24}%`;
+    const item_colour = (item.percent_change_24 < 0) ? "red" : "green";
+    resultsHTML += `<p> ${item.pair}  >  ${item.last}  |  <span style="color:${item_colour}">${item.percent_change_24}%</span></p>`;
   });
   results.innerHTML = resultsHTML;
   
@@ -99,7 +107,7 @@ async function getCoingeckoData() {
           throw Error (`No Coingecko data retrieved`);
         } else {
           coingeckoPairs.forEach(pair => {
-            const pairData = response.data.find(obj => obj.symbol === pair);
+            const pairData = response.data.find(obj => obj.symbol === pair.toLowerCase());
             console.log(pairData);
             if (pairData === undefined) {
               priceData.push({
@@ -108,7 +116,7 @@ async function getCoingeckoData() {
                 pair: `${pair}/EUR`,
                 percent_change_24: "0.00",
               });
-            } else {
+            } else {              
               priceData.push({
                 last: pairData.current_price,
                 market: `${pair}/EUR`,
