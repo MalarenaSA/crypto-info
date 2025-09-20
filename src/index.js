@@ -5,37 +5,75 @@ import axios from "../node_modules/axios";
 
 
 // Hard-coding Lookup Pairs for now
-const bitstampPairs = [
-  "ETH/EUR",
-  "XRP/EUR",
-  "FLR/EUR",
-  "SGB/EUR",
-  "ATOM/EUR",
-  "ADA/EUR",
-  "COREUM/EUR",
-  "DOT/EUR",
-  "NEAR/EUR",
-  "SOL/EUR",
-];
+const cryptoPairs = [{
+  source: "Bitstamp",
+  crypto: "ETH",
+  currency: "EUR",
+  target: 3000.00,
+},{
+  source: "Bitstamp",
+  crypto: "XRP",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "FLR",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "SGB",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "ATOM",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "ADA",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "COREUM",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "DOT",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "NEAR",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Bitstamp",
+  crypto: "SOL",
+  currency: "EUR",
+  target: 2.00,
+},{
+  source: "Coingecko",
+  crypto: "BTC",
+  currency: "EUR",
+  target: 90000.00,
+},{
+  source: "Coingecko",
+  crypto: "ETH",
+  currency: "EUR",
+  target: 3000.00,
+},{
+  source: "Coingecko",
+  crypto: "ATOM",
+  currency: "EUR",
+  target: 3000.00,
+},];
 
-const coingeckoPairs = [
-  "BTC",
-  "ETH",
-  "ATOM",
-];
-
-
-// Initialise ResultsHTML and priceData Array
+// Initialise ResultsHTML
 let resultsHTML = "";
-let priceData = [];
-/* Structure of each priceData item {
-  source:
-  crypto:
-  currency:
-  last:
-  percent_change_24:
-  percent_change_colour:
-}*/
 
 // Get the HTML elements to manipulate
 const results = document.querySelector(".results");
@@ -48,15 +86,13 @@ async function init() {
   messages.innerHTML="<p>Messages will display here...</p>";
   await getBitstampData();
   await getCoingeckoData();
-  priceData.forEach((item) => {
+  console.log(cryptoPairs);
+
+  cryptoPairs.forEach((item) => {
     const item_colour = (item.percent_change_24 < 0) ? "red" : "green";
-    resultsHTML += `<p> ${item.pair}  >  ${item.last}  |  <span style="color:${item_colour}">${item.percent_change_24}%</span></p>`;
+    resultsHTML += `<p> ${item.crypto}/${item.currency}  >  ${item.last}  |  <span style="color:${item_colour}">${item.percent_change_24}%</span></p>`;
   });
   results.innerHTML = resultsHTML;
-  
-  
-
-
 };
 
 // Function to get the current Bitstamp Price Data
@@ -65,23 +101,25 @@ async function getBitstampData() {
     // Get Data using Axios
     await axios
       .get("https://www.bitstamp.net/api/v2/ticker/")
-      .then((response) => {        
+      .then((response) => {
         // console.log(response);
         if (response.data.length === 0) {
           throw Error (`No Bitstamp data retrieved`);
         } else {
-          bitstampPairs.forEach(pair => {
-            const pairData = response.data.find(obj => obj.pair === pair);
-            console.log(pairData);
+          cryptoPairs.map(pair => {
+            if (pair.source !== "Bitstamp") {
+              return;
+            };
+            const searchString = `${pair.crypto}/${pair.currency}`;
+            const pairData = response.data.find(obj => obj.pair === searchString);
             if (pairData === undefined) {
-              priceData.push({
-                last: "0.00", 
-                market: pair,
-                pair: pair,
-                percent_change_24: "0.00",
-              });
+              pair.last = 0.00;
+              pair.percent_change_24 = 0.00;
+              pair.found = false;   
             } else {
-              priceData.push(pairData);
+              pair.last = +pairData.last;
+              pair.percent_change_24 = +pairData.percent_change_24;
+              pair.found = true; 
             }
           });
         }
@@ -106,23 +144,20 @@ async function getCoingeckoData() {
         if (response.data.length === 0) {
           throw Error (`No Coingecko data retrieved`);
         } else {
-          coingeckoPairs.forEach(pair => {
-            const pairData = response.data.find(obj => obj.symbol === pair.toLowerCase());
-            console.log(pairData);
+          cryptoPairs.map(pair => {
+            if (pair.source !== "Coingecko") {
+              return;
+            };
+            const searchString = pair.crypto.toLowerCase();
+            const pairData = response.data.find(obj => obj.symbol === searchString);
             if (pairData === undefined) {
-              priceData.push({
-                last: "0.00", 
-                market: `${pair}/EUR`,
-                pair: `${pair}/EUR`,
-                percent_change_24: "0.00",
-              });
-            } else {              
-              priceData.push({
-                last: pairData.current_price,
-                market: `${pair}/EUR`,
-                pair: `${pair}/EUR`,
-                percent_change_24: pairData.price_change_percentage_24h,
-              });
+              pair.last = 0.00;
+              pair.percent_change_24 = 0.00;
+              pair.found = false;
+            } else {
+              pair.last = +pairData.current_price;
+              pair.percent_change_24 = +pairData.price_change_percentage_24h;
+              pair.found = true; 
             }
           });
         }
