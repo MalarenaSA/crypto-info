@@ -4,7 +4,7 @@
 import axios from "../node_modules/axios";
 
 // Import the Crypto Pairs data
-import cryptoPairs from "./pairs.js";
+import cryptoPairs from "./cryptoPairs.js";
 
 // Initialise ResultsHTML
 let resultsHTML = "";
@@ -20,11 +20,19 @@ async function init() {
   messages.innerHTML="<p>Messages will display here...</p>";
   await getBitstampData();
   await getCoingeckoData();
-  console.log(cryptoPairs);
+  // console.log(cryptoPairs);
 
   cryptoPairs.forEach((item) => {
-    const item_colour = (item.percent_change_24 < 0) ? "red" : "green";
-    resultsHTML += `<p> ${item.crypto}/${item.currency}  >  ${item.last}  |  <span style="color:${item_colour}">${item.percent_change_24}%</span></p>`;
+    const item_pc_colour = (item.percent_change_24 < 0) ? "red" : "green";
+    const item_pd_colour = (item.percent_diff_target < 0) ? "red" : "green";
+
+    resultsHTML += `<p>
+      ${item.crypto}/${item.currency} >
+      ${item.last} |
+      <span style="color:${item_pc_colour}">${item.percent_change_24.toFixed(2)}%</span> <=>
+      ${item.target} |
+      <span style="color:${item_pd_colour}">${item.percent_diff_target.toFixed(2)}%</span>
+      </p>`;
   });
   results.innerHTML = resultsHTML;
 };
@@ -49,10 +57,12 @@ async function getBitstampData() {
             if (pairData === undefined) {
               pair.last = 0.00;
               pair.percent_change_24 = 0.00;
+              pair.percent_diff_target = -100.00;
               pair.found = false;   
             } else {
               pair.last = +pairData.last;
               pair.percent_change_24 = +pairData.percent_change_24;
+              pair.percent_diff_target = -(((pair.target - +pairData.last) / pair.target) * 100);
               pair.found = true; 
             }
           });
@@ -70,11 +80,12 @@ async function getCoingeckoData() {
     await axios
       .get("https://api.coingecko.com/api/v3/coins/markets" , {
         params: {
-          vs_currency: "eur"
+          vs_currency: "usd",
+          symbols: "btc,xbg,usdc,usdt"
         },
       })
       .then((response) => {        
-        // console.log(response);
+        console.log(response);
         if (response.data.length === 0) {
           throw Error (`No Coingecko data retrieved`);
         } else {
@@ -87,10 +98,12 @@ async function getCoingeckoData() {
             if (pairData === undefined) {
               pair.last = 0.00;
               pair.percent_change_24 = 0.00;
+              pair.percent_diff_target = -100.00;
               pair.found = false;
             } else {
               pair.last = +pairData.current_price;
               pair.percent_change_24 = +pairData.price_change_percentage_24h;
+              pair.percent_diff_target = -(((pair.target - +pairData.current_price) / pair.target) * 100);
               pair.found = true; 
             }
           });

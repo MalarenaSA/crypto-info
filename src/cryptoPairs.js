@@ -2,20 +2,25 @@
 
 // Hard-coding Lookup Pairs for now
 const cryptoPairs = [{
+  source: "Coingecko",
+  crypto: "BTC",
+  currency: "USD",
+  target: 50000.00,
+},{
+  source: "Bitstamp",
+  crypto: "BTC",
+  currency: "EUR",
+  target: 45000.00,
+},{
   source: "Bitstamp",
   crypto: "ETH",
   currency: "EUR",
-  target: 3000.00,
+  target: 1976.45,
 },{
   source: "Bitstamp",
-  crypto: "XRP",
+  crypto: "POL",
   currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "FLR",
-  currency: "EUR",
-  target: 0.02,
+  target: 0.7421,
 },{
   source: "Bitstamp",
   crypto: "SGB",
@@ -23,11 +28,16 @@ const cryptoPairs = [{
   target: 0.01,
 },{
   source: "Bitstamp",
+  crypto: "FLR",
+  currency: "EUR",
+  target: 0.0074,
+},{
+  source: "Bitstamp",
   crypto: "ADA",
   currency: "EUR",
-  target: 0.55,
+  target: 0.5329,
 },{
-  source: "Coingecko",
+  source: "Bitstamp",
   crypto: "ATOM",
   currency: "EUR",
   target: 3.73,
@@ -35,7 +45,7 @@ const cryptoPairs = [{
   source: "Bitstamp",
   crypto: "COREUM",
   currency: "EUR",
-  target: 0.10,
+  target: 0.12,
 },{
   source: "Bitstamp",
   crypto: "DOT",
@@ -54,23 +64,23 @@ const cryptoPairs = [{
 },{
   source: "Coingecko",
   crypto: "XBG",
-  currency: "EUR",
-  target: 0.08,
-},{
-  source: "Coingecko",
-  crypto: "BTC",
-  currency: "EUR",
-  target: 90000.00,
-},{
-  source: "Coingecko",
-  crypto: "ETH",
-  currency: "EUR",
-  target: 3000.00,
+  currency: "USD",
+  target: 0.07985,
 },{
   source: "Bitstamp",
-  crypto: "ATOM",
+  crypto: "XRP",
   currency: "EUR",
-  target: 3000.00,
+  target: 0.64,
+},{
+  source: "Coingecko",
+  crypto: "USDC",
+  currency: "USD",
+  target: 1.0,
+},{
+  source: "Coingecko",
+  crypto: "USDT",
+  currency: "USD",
+  target: 1.0,
 },];
 
 // Export the pairs
