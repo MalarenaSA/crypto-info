@@ -3,74 +3,8 @@
 // Import axios as the HTTP request handler
 import axios from "../node_modules/axios";
 
-
-// Hard-coding Lookup Pairs for now
-const cryptoPairs = [{
-  source: "Bitstamp",
-  crypto: "ETH",
-  currency: "EUR",
-  target: 3000.00,
-},{
-  source: "Bitstamp",
-  crypto: "XRP",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "FLR",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "SGB",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "ATOM",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "ADA",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "COREUM",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "DOT",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "NEAR",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Bitstamp",
-  crypto: "SOL",
-  currency: "EUR",
-  target: 2.00,
-},{
-  source: "Coingecko",
-  crypto: "BTC",
-  currency: "EUR",
-  target: 90000.00,
-},{
-  source: "Coingecko",
-  crypto: "ETH",
-  currency: "EUR",
-  target: 3000.00,
-},{
-  source: "Coingecko",
-  crypto: "ATOM",
-  currency: "EUR",
-  target: 3000.00,
-},];
+// Import the Crypto Pairs data
+import cryptoPairs from "./pairs.js";
 
 // Initialise ResultsHTML
 let resultsHTML = "";
