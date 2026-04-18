@@ -18,9 +18,10 @@ const messages = document.querySelector(".messages");
 async function init() {
   results.innerHTML="<p>Results will display here...</p>";
   messages.innerHTML="<p>Messages will display here...</p>";
-  await getBitstampData();
+  // await getBitstampData();
+  await getKrakenData();
   await getCoingeckoData();
-  // console.log(cryptoPairs);
+  console.log(cryptoPairs);
 
   cryptoPairs.forEach((item) => {
     const item_pc_colour = (item.percent_change_24 < 0) ? "red" : "green";
@@ -44,7 +45,7 @@ async function getBitstampData() {
     await axios
       .get("https://www.bitstamp.net/api/v2/ticker/")
       .then((response) => {
-        // console.log(response);
+        console.log(response);
         if (response.data.length === 0) {
           throw Error (`No Bitstamp data retrieved`);
         } else {
@@ -73,6 +74,42 @@ async function getBitstampData() {
   }
 };
 
+// Function to get the current Kraken Price Data
+async function getKrakenData() {
+  try {
+    // Get Data using Axios
+    await axios
+      .get("https://api.kraken.com/0/public/Ticker/")
+      .then((response) => {
+        console.log(response);
+        if (response.data.length === 0) {
+          throw Error (`No Kraken data retrieved`);
+        } else {
+          cryptoPairs.map(pair => {
+            if (pair.source !== "Kraken") {
+              return;
+            };
+            const pairData = response.data.result[pair.tickername];
+            // console.log(pairData);
+            if (pairData === undefined) {
+              pair.last = 0.00;
+              pair.percent_change_24 = 0.00;
+              pair.percent_diff_target = -100.00;
+              pair.found = false;   
+            } else {
+              pair.last = +pairData.c[0];
+              pair.percent_change_24 = (((+pairData.c[0] - +pairData.p[1]) / +pairData.p[1]) * 100);
+              pair.percent_diff_target = -(((pair.target - +pairData.c[0]) / pair.target) * 100);
+              pair.found = true; 
+            }
+          });
+        }
+      });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // Function to get the current Coingecko Price Data
 async function getCoingeckoData() {
   try {
@@ -80,8 +117,8 @@ async function getCoingeckoData() {
     await axios
       .get("https://api.coingecko.com/api/v3/coins/markets" , {
         params: {
-          vs_currency: "usd",
-          symbols: "btc,xbg,usdc,usdt"
+          vs_currency: "chf",
+          symbols: "btc,eth,sol,pol,sgb,flr,ada,atom,xbg,usdc,usdt"
         },
       })
       .then((response) => {        
